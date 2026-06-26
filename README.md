@@ -162,19 +162,18 @@ The Android application uses:
 
 ---
 
-# 👨‍💻 Team
+# 👥 Team
 
-- Pavani Aatla
+- Biruda Purnima Pavani Ganga
+- Aatala Pavani
 - Buragani Navya
 - Challa Sreeya
 
-Guide:
+### 👨‍🏫 Guide
 - Dr. T. Chandrasekhar
 
-Co-Guide:
+### 👨‍🏫 Co-Guide
 - Mr. L. Dasaradha Ramayya
-
----
 
 # 🚀 Future Improvements
 
