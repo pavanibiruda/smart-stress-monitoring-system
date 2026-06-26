@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="left-section">
+        <h1>Create Your <span>Account</span></h1>
+        <p>Join StressLens and monitor your mental wellness easily.</p>
+        <img src="{{ url_for('static', filename='images/register stress.png') }}" alt="image">
+    </div>
+
+    <div class="right-section">
+        <div class="login-box">
+
+            <h2>Register</h2>
+            <p>Create your new account</p>
+
+            <label>Username</label>
+            <input type="text" id="username" placeholder="Enter Username">
+
+            <label>Email</label>
+            <input type="email" id="email" placeholder="Enter Email">
+
+            <label>Occupation</label>
+            <select id="occupation" required>
+                <option value="">Select Occupation</option>
+                <option value="student">Student</option>
+                <option value="teacher">Teacher</option>
+                <option value="doctor">Doctor</option>
+                <option value="lawyer">Lawyer</option>
+                <option value="employee">Employee</option>
+                <option value="business">Business</option>
+                <option value="other">Other</option>
+            </select>
+
+            <label>Password</label>
+            <input type="password" id="password" placeholder="Enter Password">
+
+            <small>Password must contain 8 characters, uppercase, lowercase, number and special character.</small>
+
+            <button onclick="registerUser()">Register</button>
+
+            <p class="signup">
+                Already have an account?
+                <a href="/">Login</a>
+            </p>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+function isValidEmail(email){
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function isStrongPassword(password){
+    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/.test(password);
+}
+
+function registerUser(){
+
+    let username = document.getElementById("username").value.trim();
+    let email = document.getElementById("email").value.trim();
+    let occupation = document.getElementById("occupation").value;
+    let password = document.getElementById("password").value;
+
+    if(username === "" || email === "" || occupation === "" || password === ""){
+        alert("Please fill all fields");
+        return;
+    }
+
+    if(!isValidEmail(email)){
+        alert("Please enter valid email");
+        return;
+    }
+
+    if(!isStrongPassword(password)){
+        alert("Password must contain uppercase, lowercase, number, special character and 8 characters");
+        return;
+    }
+
+    fetch("/api/register",{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+            username:username,
+            email:email,
+            occupation:occupation,
+            password:password
+        })
+    })
+    .then(res=>res.json())
+    .then(data=>{
+        if(data.success){
+            alert("Registration Successful");
+            window.location.href="/";
+        }
+        else{
+            alert(data.error);
+        }
+    })
+    .catch(error=>{
+        alert("Registration error: " + error);
+    });
+}
+</script>
+
+</body>
+</html>

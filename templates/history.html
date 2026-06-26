@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+    <style>
+        .history-page{
+            background:white;
+            padding:35px;
+            border-radius:24px;
+            margin-top:30px;
+            margin-bottom:120px;
+            box-shadow:0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .history-card{
+            background:#f5f7fb;
+            padding:25px;
+            border-radius:20px;
+            margin-top:20px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:20px;
+            word-break:break-word;
+        }
+
+        .history-card h3{
+            color:#14005f;
+            margin-bottom:10px;
+        }
+
+        .history-card p{
+            margin-top:6px;
+            color:#555;
+            line-height:1.5;
+        }
+
+        .score-box{
+            min-width:95px;
+            min-height:95px;
+            border-radius:50%;
+            background:linear-gradient(135deg,#6a00ff,#4018ff);
+            color:white;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            font-size:24px;
+            font-weight:bold;
+            text-align:center;
+        }
+
+        .empty-msg{
+            text-align:center;
+            padding:30px;
+            color:#777;
+            font-size:18px;
+        }
+
+        @media(max-width:768px){
+            .history-page{
+                padding:22px;
+            }
+
+            .history-card{
+                flex-direction:column;
+                align-items:flex-start;
+            }
+
+            .score-box{
+                align-self:center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="dashboard-container">
+
+    <div class="sidebar">
+        <div>
+            <div class="logo">
+                <h2>Smart Stress</h2>
+                <p>Monitoring System</p>
+            </div>
+
+            <div class="menu">
+                <a href="/dashboard">🏠 Dashboard</a>
+                <a href="/facescan">📷 Face Scan</a>
+                <a href="/questionnaire">📋 Questionnaire</a>
+                <a href="/reports">📊 Reports</a>
+                <a href="/recommendations">💡 Recommendations</a>
+                <a href="/history" class="active">🕒 History</a>
+                <a href="/profile">👤 Profile</a>
+            </div>
+        </div>
+
+        <div class="bottom-profile">
+            <div class="profile">
+                <div class="circle" id="userInitials"></div>
+                <div>
+                    <h4 id="sidebarName"></h4>
+                    <p id="sidebarEmail"></p>
+                </div>
+            </div>
+
+            <a class="signout" href="/">↩ Sign out</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+
+        <div class="top-section">
+            <h1>Assessment History 🕒</h1>
+            <p>View your previous stress analysis sessions.</p>
+        </div>
+
+        <div class="history-page">
+            <h2>Your Stress History</h2>
+
+            <div id="historyContainer">
+                <div class="empty-msg">Loading history...</div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="bottom-nav">
+    <a href="/dashboard">🏠<span>Home</span></a>
+    <a href="/facescan">📷<span>Scan</span></a>
+    <a href="/questionnaire">🧠<span>Quiz</span></a>
+    <a href="/reports">📊<span>Reports</span></a>
+    <a href="/recommendations">💡<span>Tips</span></a>
+    <a href="/profile">👤<span>Profile</span></a>
+</div>
+
+<script src="{{ url_for('static', filename='js/flowGuard.js') }}"></script>
+
+<script>
+    let username = localStorage.getItem("username") || "User";
+    let email = localStorage.getItem("email") || "";
+    let userId = localStorage.getItem("user_id");
+
+    function getInitials(name){
+        let words = name.trim().split(" ");
+
+        if(words.length >= 2){
+            return (words[0][0] + words[1][0]).toUpperCase();
+        }
+
+        return name.substring(0,2).toUpperCase();
+    }
+
+    document.getElementById("sidebarName").innerText = username;
+    document.getElementById("sidebarEmail").innerText = email;
+    document.getElementById("userInitials").innerText = getInitials(username);
+
+    if(!userId){
+        alert("Please login first.");
+        window.location.href = "/";
+    }
+
+    fetch(`/api/get_reports/${userId}`)
+    .then(response => response.json())
+    .then(data => {
+
+        let historyContainer = document.getElementById("historyContainer");
+
+        if(!data.success){
+            historyContainer.innerHTML = `
+                <div class="empty-msg">
+                    ${data.error}
+                </div>
+            `;
+            return;
+        }
+
+        let historyData = data.reports;
+
+        if(historyData.length === 0){
+            historyContainer.innerHTML = `
+                <div class="empty-msg">
+                    No history found. Complete your first assessment.
+                </div>
+            `;
+            return;
+        }
+
+        historyContainer.innerHTML = "";
+
+        historyData.forEach(item => {
+
+            let card = document.createElement("div");
+
+            card.className = "history-card";
+
+            card.innerHTML = `
+                <div>
+                    <h3>${item.stress_level}</h3>
+                    <p><b>Date:</b> ${item.created_at}</p>
+                    <p><b>Emotion:</b> ${item.emotion}</p>
+                    <p><b>Heart Rate:</b> ${item.heart_rate} bpm</p>
+                    <p><b>Blink Rate:</b> ${item.blink_rate} /min</p>
+                    <p><b>Respiratory Rate:</b> ${item.resp_rate} rpm</p>
+                    <p><b>Blood Pressure:</b> ${item.blood_pressure}</p>
+                    <p><b>Face Score:</b> ${item.face_score}</p>
+                    <p><b>Questionnaire Score:</b> ${item.questionnaire_score}</p>
+                </div>
+
+                <div class="score-box">
+                    ${item.final_score}/10
+                </div>
+            `;
+
+            historyContainer.appendChild(card);
+        });
+
+    })
+    .catch(error => {
+        document.getElementById("historyContainer").innerHTML = `
+            <div class="empty-msg">
+                History loading error: ${error}
+            </div>
+        `;
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Questionnaire</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+<style>
+.question-box{
+    background:white;
+    padding:30px;
+    border-radius:24px;
+    margin-top:30px;
+    box-shadow:0 4px 15px rgba(0,0,0,0.08);
+}
+
+.question-card{
+    background:#f5f7fb;
+    padding:20px;
+    border-radius:18px;
+    margin-bottom:18px;
+}
+
+.question-card h3{
+    color:#160061;
+    margin-bottom:15px;
+}
+
+.question-card label{
+    margin-right:18px;
+    font-size:16px;
+}
+
+.main-content button{
+    margin-top:20px;
+    padding:15px 25px;
+    border:none;
+    border-radius:16px;
+    background:linear-gradient(90deg,#6a00ff,#4018ff);
+    color:white;
+    font-size:17px;
+    font-weight:bold;
+    cursor:pointer;
+}
+</style>
+
+</head>
+
+
+<body>
+
+<div class="dashboard-container">
+
+
+<!-- Sidebar -->
+
+<div class="sidebar">
+
+<div>
+
+<div class="logo">
+<h2>Smart Stress</h2>
+<p>Monitoring System</p>
+</div>
+
+
+<div class="menu">
+
+<a href="/dashboard">🏠 Dashboard</a>
+
+<a href="/facescan">
+📷 Face Scan
+</a>
+
+<a class="active" href="/questionnaire">
+📋 Questionnaire
+</a>
+
+<a href="/reports">
+📊 Reports
+</a>
+
+<a href="/recommendations">
+💡 Recommendations
+</a>
+
+<a href="/history">
+🕒 History
+</a>
+
+<a href="/profile">
+👤 Profile
+</a>
+
+</div>
+
+</div>
+
+
+<div class="bottom-profile">
+
+<div class="profile">
+
+<div class="circle" id="userInitials"></div>
+
+<div>
+<h4 id="sidebarName"></h4>
+<p id="sidebarEmail"></p>
+</div>
+
+</div>
+
+
+<a class="signout" href="/">
+↩ Sign out
+</a>
+
+</div>
+
+</div>
+
+
+
+<!-- Main -->
+
+<div class="main-content">
+
+
+<div class="top-section">
+
+<h1 id="questionnaireTitle">
+Stress Questionnaire
+</h1>
+
+<p>
+Answer questions based on your occupation
+</p>
+
+</div>
+
+
+
+<div class="question-box" id="questionsContainer">
+
+
+</div>
+
+
+<button onclick="submitQuestionnaire()">
+Submit Questionnaire
+</button>
+
+
+</div>
+
+</div>
+
+
+
+<script>
+
+
+// USER DETAILS
+
+let username =
+localStorage.getItem("username") || "User";
+
+let email =
+localStorage.getItem("email") || "";
+
+
+document.getElementById("sidebarName").innerText=username;
+
+document.getElementById("sidebarEmail").innerText=email;
+
+
+document.getElementById("userInitials").innerText =
+username.substring(0,2).toUpperCase();
+
+
+
+
+// OCCUPATION QUESTIONS
+
+
+let occupation =
+localStorage.getItem("occupation") || "other";
+
+
+
+let questionData={
+
+
+student:[
+
+"Do exams or assignments make you feel stressed?",
+
+"Do you feel pressure about your academic performance?",
+
+"Do you worry about your future career?",
+
+"Do you get enough sleep during college days?",
+
+"Do you find difficulty balancing studies and personal life?"
+
+],
+
+
+
+teacher:[
+
+"Do teaching responsibilities increase your stress?",
+
+"Do you feel pressure while handling students?",
+
+"Do workload and deadlines affect you?",
+
+"Do you feel mentally tired after classes?",
+
+"Do you maintain work-life balance?"
+
+],
+
+
+
+doctor:[
+
+"Do patient responsibilities make you stressed?",
+
+"Do emergency situations create pressure?",
+
+"Do long working hours affect your health?",
+
+"Do you get enough rest after duty?",
+
+"Do you feel emotionally exhausted?"
+
+],
+
+
+
+lawyer:[
+
+"Do case deadlines increase your stress?",
+
+"Do client expectations create pressure?",
+
+"Do court schedules affect your routine?",
+
+"Do you feel mentally tired after work?",
+
+"Do you find time for relaxation?"
+
+],
+
+
+
+employee:[
+
+"Do workplace deadlines create stress?",
+
+"Do you feel pressure from your responsibilities?",
+
+"Do you get enough breaks during work?",
+
+"Do you feel tired after office hours?",
+
+"Can you balance work and personal life?"
+
+],
+
+
+
+business:[
+
+"Do financial responsibilities create stress?",
+
+"Do business risks affect your mental health?",
+
+"Do customer problems create pressure?",
+
+"Do you get enough personal time?",
+
+"Can you balance business and family?"
+
+],
+
+
+
+other:[
+
+"Do you feel stressed in daily life?",
+
+"Do you get proper sleep?",
+
+"Do you feel emotionally tired?",
+
+"Do you feel pressure from responsibilities?",
+
+"Do you find enough time to relax?"
+
+]
+
+
+};
+
+
+
+let questions =
+questionData[occupation] || questionData.other;
+
+
+
+document.getElementById("questionnaireTitle").innerText =
+occupation.toUpperCase()+" Stress Questionnaire";
+
+
+
+let container =
+document.getElementById("questionsContainer");
+
+
+
+questions.forEach((q,index)=>{
+
+
+container.innerHTML +=
+
+`
+
+<div class="question-card">
+
+<h3>${index+1}. ${q}</h3>
+
+
+<label>
+<input type="radio"
+name="q${index}"
+value="1">
+Never
+</label>
+
+
+<label>
+<input type="radio"
+name="q${index}"
+value="2">
+Sometimes
+</label>
+
+
+<label>
+<input type="radio"
+name="q${index}"
+value="3">
+Often
+</label>
+
+
+<label>
+<input type="radio"
+name="q${index}"
+value="4">
+Always
+</label>
+
+
+</div>
+
+`;
+
+});
+
+
+
+// SUBMIT
+
+
+function submitQuestionnaire(){
+
+
+let total=0;
+
+
+for(let i=0;i<questions.length;i++){
+
+
+let answer =
+document.querySelector(
+`input[name=q${i}]:checked`
+);
+
+
+if(!answer){
+
+alert("Please answer all questions");
+
+return;
+
+}
+
+
+total += Number(answer.value);
+
+
+}
+
+
+
+let questionnaireScore =
+Math.round((total/20)*10);
+
+
+
+let faceScore=5;
+
+
+
+let finalScore =
+Math.round(
+(faceScore*0.3)+
+(questionnaireScore*0.5)+
+(5*0.2)
+);
+
+
+
+let stressLevel="";
+
+
+if(finalScore<=3){
+
+stressLevel="🟢 Low Stress";
+
+}
+
+else if(finalScore<=6){
+
+stressLevel="🟡 Medium Stress";
+
+}
+
+else{
+
+stressLevel="🔴 High Stress";
+
+}
+
+
+
+fetch("/api/save_assessment",{
+
+
+method:"POST",
+
+
+headers:{
+
+"Content-Type":"application/json"
+
+},
+
+
+body:JSON.stringify({
+
+
+user_id:
+localStorage.getItem("user_id"),
+
+
+emotion:
+localStorage.getItem("emotion") || "Neutral",
+
+
+heartRate:
+localStorage.getItem("heartRate") || 75,
+
+
+blinkRate:
+localStorage.getItem("blinkRate") || 8,
+
+
+respRate:
+localStorage.getItem("respRate") || 16,
+
+
+bp:
+localStorage.getItem("bp") || "120/80",
+
+
+faceScore:faceScore,
+
+
+questionnaireScore:
+questionnaireScore,
+
+
+finalScore:
+finalScore,
+
+
+stressLevel:
+stressLevel
+
+
+})
+
+
+})
+
+
+.then(res=>res.json())
+
+.then(data=>{
+
+
+if(data.success){
+
+
+localStorage.setItem(
+"questionnaireDone",
+"true"
+);
+
+
+alert("Assessment Completed");
+
+
+window.location.href="/reports";
+
+
+}
+
+else{
+
+alert(data.error);
+
+}
+
+
+});
+
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>

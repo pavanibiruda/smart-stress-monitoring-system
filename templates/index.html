@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Stress Monitoring Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="left-section">
+        <h1>Your Mental Well-being <span>Matters</span> to Us</h1>
+        <p>
+            Monitor your stress levels, understand your emotions,
+            and improve your mental wellness using Smart Stress.
+        </p>
+        <img src="{{ url_for('static', filename='images/meditation.png') }}" alt="Meditation">
+    </div>
+
+    <div class="right-section">
+        <div class="login-box">
+
+            <h2>Login</h2>
+            <p>Login to continue to your account</p>
+
+            <label>Username</label>
+            <input type="text" id="name" placeholder="Enter Username">
+
+            <label>Occupation</label>
+            <select id="occupation" required>
+                <option value="">Select Occupation</option>
+                <option value="student">Student</option>
+                <option value="teacher">Teacher</option>
+                <option value="doctor">Doctor</option>
+                <option value="lawyer">Lawyer</option>
+                <option value="employee">Employee</option>
+                <option value="business">Business</option>
+                <option value="other">Other</option>
+            </select>
+
+            <label>Password</label>
+            <input type="password" id="password" placeholder="Enter Password">
+
+            <button onclick="login()">Login</button>
+
+            <p style="margin-top:15px;text-align:center;">
+                <a href="#" onclick="forgotPassword(); return false;">Forgot Password?</a>
+            </p>
+
+            <p class="signup">
+                Don't have an account?
+                <a href="/register">Register</a>
+            </p>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+function login(){
+
+    let username = document.getElementById("name").value.trim();
+    let occupation = document.getElementById("occupation").value;
+    let password = document.getElementById("password").value;
+
+    if(username === "" || occupation === "" || password === ""){
+        alert("Please enter username, occupation and password");
+        return;
+    }
+
+    fetch("/api/login",{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+            username:username,
+            occupation:occupation,
+            password:password
+        })
+    })
+    .then(res=>res.json())
+    .then(data=>{
+
+        if(data.success){
+            localStorage.clear();
+
+            localStorage.setItem("user_id", data.user_id);
+            localStorage.setItem("username", data.username);
+            localStorage.setItem("email", data.email);
+            localStorage.setItem("occupation", data.occupation);
+
+            alert("Login Successful");
+            window.location.href="/dashboard";
+        }
+        else{
+            alert(data.error);
+        }
+    })
+    .catch(error=>{
+        alert("Login error: " + error);
+    });
+}
+
+
+function forgotPassword(){
+
+    let username = prompt("Enter your username:");
+    if(username === null || username.trim() === ""){
+        alert("Username is required");
+        return;
+    }
+
+    let email = prompt("Enter your registered email:");
+    if(email === null || email.trim() === ""){
+        alert("Email is required");
+        return;
+    }
+
+    let newPassword = prompt("Enter new password:");
+    if(newPassword === null || newPassword.trim() === ""){
+        alert("New password is required");
+        return;
+    }
+
+    fetch("/api/forgot_password", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            username: username.trim(),
+            email: email.trim(),
+            newPassword: newPassword
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success){
+            alert("Password reset successful. Please login with new password.");
+        }else{
+            alert(data.error);
+        }
+    })
+    .catch(error => {
+        alert("Forgot password error: " + error);
+    });
+}
+
+</script>
+
+</body>
+</html>

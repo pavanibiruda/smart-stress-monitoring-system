@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Stress Monitoring Dashboard</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+    <style>
+        .home-graph-box{
+            background:white;
+            padding:30px;
+            border-radius:22px;
+            margin-top:30px;
+            box-shadow:0 4px 15px rgba(0,0,0,0.05);
+            overflow:hidden;
+        }
+
+        .home-graph{
+            height:220px;
+            display:flex;
+            align-items:flex-end;
+            gap:14px;
+            padding-top:35px;
+            padding-left:10px;
+            border-left:2px solid #ddd;
+            border-bottom:2px solid #ddd;
+            overflow-x:auto;
+            overflow-y:hidden;
+        }
+
+        .home-bar{
+            min-width:38px;
+            background:linear-gradient(180deg,#6a00ff,#4018ff);
+            border-radius:12px 12px 0 0;
+            position:relative;
+        }
+
+        .home-bar span{
+            position:absolute;
+            top:-28px;
+            left:50%;
+            transform:translateX(-50%);
+            font-size:13px;
+            font-weight:bold;
+            color:#14005f;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="dashboard-container">
+
+    <div class="sidebar">
+        <div>
+            <div class="logo">
+                <h2>Smart Stress</h2>
+                <p>Monitoring System</p>
+            </div>
+
+            <div class="menu">
+                <a href="/dashboard" class="active">🏠 Dashboard</a>
+                <a href="/facescan">📷 Scan</a>
+                <a href="#" onclick="goToQuestionnaire(); return false;">📋 Questionnaire</a>
+                <a href="#" onclick="goToReports(); return false;">📊 Reports</a>
+                <a href="#" onclick="goToRecommendations(); return false;">💡 Recommendations</a>
+                <a href="/history">🕒 History</a>
+                <a href="/profile">👤 Profile</a>
+            </div>
+        </div>
+
+        <div class="bottom-profile">
+            <div class="profile">
+                <div class="circle" id="userInitials">U</div>
+                <div>
+                    <h4 id="sidebarName">User</h4>
+                    <p id="sidebarEmail"></p>
+                </div>
+            </div>
+
+            <a class="signout" href="#" onclick="logoutUser(); return false;">↩ Logout</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+
+        <div class="top-section">
+            <h1><span id="greetingText"></span>, <span id="displayName"></span> 👋</h1>
+            <p>Monitor your stress levels and improve your mental wellness.</p>
+        </div>
+
+        <div class="banner">
+            <div>
+                <h2>Ready to analyze your stress? 🧠</h2>
+                <p>Start face scan and questionnaire analysis instantly.</p>
+            </div>
+
+            <button onclick="startAssessment()">Start Assessment</button>
+        </div>
+
+        <div class="cards">
+
+            <div class="card">
+                <h3 id="totalAssessments">0</h3>
+                <p>Total Assessments</p>
+            </div>
+
+            <div class="card">
+                <h3 id="averageScore">0</h3>
+                <p>Average Stress Score</p>
+            </div>
+
+            <div class="card">
+                <h3 id="stressLevel">N/A</h3>
+                <p>Stress Level</p>
+            </div>
+
+            <div class="card">
+                <h3 id="daysActive">0</h3>
+                <p>Days Active</p>
+            </div>
+
+        </div>
+
+        <div class="home-graph-box">
+            <h2>Stress Graph</h2>
+            <p style="margin-top:8px;color:#666;">Recent stress score trend</p>
+
+            <div class="home-graph" id="homeStressGraph">
+                <p style="color:#777;">No graph data available.</p>
+            </div>
+        </div>
+
+        <div class="section-container">
+
+            <div class="section">
+                <h2>Stress Breakdown</h2>
+
+                <div class="stress-item">
+                    <span>🟢 Low Stress</span>
+                    <span id="lowPercent">0%</span>
+                </div>
+
+                <div class="stress-item">
+                    <span>🟡 Medium Stress</span>
+                    <span id="mediumPercent">0%</span>
+                </div>
+
+                <div class="stress-item">
+                    <span>🔴 High Stress</span>
+                    <span id="highPercent">0%</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Recent Activity</h2>
+
+                <div class="history-box" id="recentActivity">
+                    No activity yet — complete your first assessment.
+                </div>
+            </div>
+
+        </div>
+
+        <div class="recent">
+            <h2>Recent Sessions</h2>
+
+            <div id="recentSessionBox">
+                No recent sessions yet.
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="bottom-nav">
+    <a href="/dashboard">🏠<span>Home</span></a>
+    <a href="/facescan">📷<span>Scan</span></a>
+    <a href="#" onclick="goToQuestionnaire(); return false;">🧠<span>Quiz</span></a>
+    <a href="#" onclick="goToReports(); return false;">📊<span>Reports</span></a>
+    <a href="#" onclick="goToRecommendations(); return false;">💡<span>Tips</span></a>
+    <a href="/profile">👤<span>Profile</span></a>
+</div>
+
+<script src="{{ url_for('static', filename='js/flowGuard.js') }}"></script>
+
+<script>
+    let userId = localStorage.getItem("user_id");
+    let username = localStorage.getItem("username") || "User";
+    let email = localStorage.getItem("email") || "";
+
+    if(!userId){
+        alert("Please login first.");
+        window.location.href = "/";
+    }
+
+    function getInitials(name){
+        let words = name.trim().split(" ");
+
+        if(words.length >= 2){
+            return (words[0][0] + words[1][0]).toUpperCase();
+        }
+
+        return name.substring(0,2).toUpperCase();
+    }
+
+    function startAssessment(){
+
+        let savedUserId = localStorage.getItem("user_id");
+        let savedUsername = localStorage.getItem("username");
+        let savedEmail = localStorage.getItem("email");
+
+        localStorage.clear();
+
+        localStorage.setItem("user_id", savedUserId);
+        localStorage.setItem("username", savedUsername);
+        localStorage.setItem("email", savedEmail);
+
+        localStorage.setItem("assessmentStarted", "true");
+        localStorage.setItem("currentStep", "facescan");
+
+        window.location.href = "/facescan";
+    }
+
+    function logoutUser(){
+        let confirmLogout = confirm("Are you sure you want to logout?");
+
+        if(confirmLogout){
+            localStorage.clear();
+            alert("Logged out successfully");
+            window.location.href = "/";
+        }
+    }
+
+    let firstName = username.split(" ")[0];
+
+    let hour = new Date().getHours();
+
+    let greeting =
+        hour < 12 ? "Good Morning" :
+        hour < 17 ? "Good Afternoon" :
+        "Good Evening";
+
+    let initials = getInitials(username);
+
+    document.getElementById("greetingText").innerText = greeting;
+    document.getElementById("displayName").innerText = firstName;
+    document.getElementById("sidebarName").innerText = username;
+    document.getElementById("sidebarEmail").innerText = email;
+    document.getElementById("userInitials").innerText = initials;
+
+    function loadDashboardFromDatabase(){
+
+        fetch(`/api/get_reports/${userId}`)
+        .then(response => response.json())
+        .then(data => {
+
+            if(!data.success){
+                console.log(data.error);
+                return;
+            }
+
+            let reports = data.reports;
+
+            document.getElementById("totalAssessments").innerText = reports.length;
+
+            if(reports.length === 0){
+
+                document.getElementById("averageScore").innerText = "0";
+                document.getElementById("stressLevel").innerText = "N/A";
+                document.getElementById("daysActive").innerText = "0";
+
+                document.getElementById("lowPercent").innerText = "0%";
+                document.getElementById("mediumPercent").innerText = "0%";
+                document.getElementById("highPercent").innerText = "0%";
+
+                document.getElementById("recentActivity").innerText =
+                    "No activity yet — complete your first assessment.";
+
+                document.getElementById("recentSessionBox").innerText =
+                    "No recent sessions yet.";
+
+                document.getElementById("homeStressGraph").innerHTML =
+                    `<p style="color:#777;">No graph data available.</p>`;
+
+                return;
+            }
+
+            let totalScore = 0;
+            let low = 0;
+            let medium = 0;
+            let high = 0;
+            let dates = [];
+
+            reports.forEach(item => {
+
+                totalScore += Number(item.final_score || 0);
+
+                if(item.stress_level.includes("Low")){
+                    low++;
+                }
+                else if(item.stress_level.includes("Medium")){
+                    medium++;
+                }
+                else if(item.stress_level.includes("High")){
+                    high++;
+                }
+
+                let dateOnly = item.created_at.toString().split(" ").slice(0,4).join(" ");
+
+                if(!dates.includes(dateOnly)){
+                    dates.push(dateOnly);
+                }
+            });
+
+            let average = Math.round(totalScore / reports.length);
+
+            let latest = reports[0];
+
+            let cleanStatus = latest.stress_level
+                .replace("🟢","")
+                .replace("🟡","")
+                .replace("🔴","")
+                .trim();
+
+            document.getElementById("averageScore").innerText = average;
+            document.getElementById("stressLevel").innerText = cleanStatus;
+            document.getElementById("daysActive").innerText = dates.length;
+
+            document.getElementById("lowPercent").innerText =
+                Math.round((low / reports.length) * 100) + "%";
+
+            document.getElementById("mediumPercent").innerText =
+                Math.round((medium / reports.length) * 100) + "%";
+
+            document.getElementById("highPercent").innerText =
+                Math.round((high / reports.length) * 100) + "%";
+
+            document.getElementById("recentActivity").innerText =
+                "Last assessment completed successfully ✔";
+
+            document.getElementById("recentSessionBox").innerHTML = `
+                <div class="recent-card">
+                    <div>
+                        <h3>Hybrid Stress Assessment</h3>
+                        <p>${latest.created_at}</p>
+                    </div>
+                    <div>${latest.stress_level}</div>
+                </div>
+            `;
+
+            let graph = document.getElementById("homeStressGraph");
+
+            graph.innerHTML = "";
+
+            let graphData = [...reports].reverse().slice(-7);
+
+            graphData.forEach(item => {
+
+                let score = Number(item.final_score || 0);
+
+                let barHeight = score * 15;
+
+                if(barHeight < 20){
+                    barHeight = 20;
+                }
+
+                let bar = document.createElement("div");
+
+                bar.className = "home-bar";
+
+                bar.style.height = barHeight + "px";
+
+                bar.innerHTML = `<span>${score}</span>`;
+
+                graph.appendChild(bar);
+            });
+
+        })
+        .catch(error => {
+            console.log("Dashboard loading error:", error);
+        });
+    }
+
+    loadDashboardFromDatabase();
+</script>
+
+</body>
+</html>

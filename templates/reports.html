@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+    <style>
+        .report-box{
+            background:white;
+            padding:35px;
+            border-radius:24px;
+            margin-top:30px;
+            margin-bottom:120px;
+            box-shadow:0 4px 15px rgba(0,0,0,0.08);
+            max-width:100%;
+            overflow:hidden;
+        }
+
+        .report-grid{
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:20px;
+            margin-top:25px;
+        }
+
+        .report-card{
+            background:#f5f7fb;
+            padding:25px;
+            border-radius:20px;
+            text-align:center;
+            word-break:break-word;
+        }
+
+        .report-card h3{
+            font-size:32px;
+            color:#5d36c7;
+        }
+
+        .status-box{
+            margin-top:25px;
+            background:linear-gradient(90deg,#6a00ff,#4018ff);
+            color:white;
+            padding:25px;
+            border-radius:22px;
+        }
+
+        .progress-track{
+            margin-top:15px;
+            width:100%;
+            height:14px;
+            background:rgba(255,255,255,0.3);
+            border-radius:20px;
+            overflow:hidden;
+        }
+
+        .progress-fill{
+            height:100%;
+            width:0%;
+            background:white;
+            border-radius:20px;
+            transition:0.4s;
+        }
+
+        .graph-box{
+            margin-top:30px;
+            background:#f5f7fb;
+            padding:25px;
+            border-radius:22px;
+            overflow:hidden;
+        }
+
+        .graph{
+            height:220px;
+            display:flex;
+            align-items:flex-end;
+            gap:14px;
+            padding-top:35px;
+            padding-left:10px;
+            border-left:2px solid #ddd;
+            border-bottom:2px solid #ddd;
+            overflow-x:auto;
+            overflow-y:hidden;
+        }
+
+        .bar{
+            min-width:38px;
+            background:linear-gradient(180deg,#6a00ff,#4018ff);
+            border-radius:12px 12px 0 0;
+            position:relative;
+        }
+
+        .bar span{
+            position:absolute;
+            top:-28px;
+            left:50%;
+            transform:translateX(-50%);
+            font-size:13px;
+            font-weight:bold;
+            color:#14005f;
+        }
+
+        .table-wrapper{
+            width:100%;
+            overflow-x:auto;
+            margin-top:30px;
+        }
+
+        .table{
+            width:100%;
+            min-width:850px;
+            border-collapse:collapse;
+        }
+
+        .table th,
+        .table td{
+            padding:15px;
+            border-bottom:1px solid #ddd;
+            text-align:left;
+            word-break:break-word;
+        }
+
+        .table th{
+            color:#14005f;
+        }
+
+        .empty-msg{
+            text-align:center;
+            padding:25px;
+            color:#777;
+            font-size:18px;
+        }
+
+        .rec-btn{
+            margin-top:18px;
+            padding:15px 25px;
+            width:100%;
+            border:none;
+            border-radius:16px;
+            background:#00c853;
+            color:white;
+            font-size:17px;
+            font-weight:bold;
+            cursor:pointer;
+        }
+
+        .download-btn{
+            background:linear-gradient(90deg,#6a00ff,#4018ff);
+        }
+
+        @media screen and (max-width:768px){
+            .report-grid{
+                grid-template-columns:1fr;
+            }
+
+            .report-box{
+                padding:22px;
+            }
+
+            .graph{
+                height:180px;
+            }
+
+            .table{
+                font-size:14px;
+            }
+
+            .report-card h3{
+                font-size:26px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="dashboard-container">
+
+    <div class="sidebar">
+        <div>
+            <div class="logo">
+                <h2>Smart Stress</h2>
+                <p>Monitoring System</p>
+            </div>
+
+            <div class="menu">
+                <a href="/dashboard">🏠 Dashboard</a>
+                <a href="/facescan">📷 Face Scan</a>
+                <a href="/questionnaire">📋 Questionnaire</a>
+                <a class="active" href="/reports">📊 Reports</a>
+                <a href="/recommendations">💡 Recommendations</a>
+                <a href="/history">🕒 History</a>
+                <a href="/profile">👤 Profile</a>
+            </div>
+        </div>
+
+        <div class="bottom-profile">
+            <div class="profile">
+                <div class="circle" id="userInitials"></div>
+                <div>
+                    <h4 id="sidebarName"></h4>
+                    <p id="sidebarEmail"></p>
+                </div>
+            </div>
+            <a class="signout" href="/">↩ Sign out</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+
+        <div class="top-section">
+            <h1>Stress Reports 📊</h1>
+            <p>View your stress analysis reports and progress.</p>
+        </div>
+
+        <div class="report-box">
+
+            <h2>Report Summary</h2>
+
+            <div class="report-grid">
+
+                <div class="report-card">
+                    <h3 id="totalAssessments">0</h3>
+                    <p>Total Assessments</p>
+                </div>
+
+                <div class="report-card">
+                    <h3 id="averageScore">0</h3>
+                    <p>Average Stress Score</p>
+                </div>
+
+                <div class="report-card">
+                    <h3 id="currentLevel">N/A</h3>
+                    <p>Current Stress Level</p>
+                </div>
+
+            </div>
+
+            <div class="status-box">
+                <h2 id="latestStatus">No Stress Data Yet</h2>
+                <p id="statusMessage">Complete an assessment to view your stress insights.</p>
+
+                <div class="progress-track">
+                    <div class="progress-fill" id="stressProgress"></div>
+                </div>
+            </div>
+
+            <div class="graph-box">
+                <h2>Stress Score Trend</h2>
+                <p style="margin-top:8px;color:#666;">Your assessment scores over time</p>
+
+                <div class="graph" id="stressGraph">
+                    <p style="color:#777;">No graph data available.</p>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="table" id="reportTable">
+                    <tr>
+                        <th>Date</th>
+                        <th>Emotion</th>
+                        <th>Heart Rate</th>
+                        <th>Blink Rate</th>
+                        <th>Resp Rate</th>
+                        <th>BP</th>
+                        <th>Face Score</th>
+                        <th>Questionnaire Score</th>
+                        <th>Final Score</th>
+                        <th>Status</th>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="emptyMessage" class="empty-msg">
+                No reports yet — complete face scan and questionnaire first.
+            </div>
+
+            <button class="rec-btn download-btn" onclick="downloadStressReport()">
+                Download Stress Report
+            </button>
+
+            <button class="rec-btn" onclick="window.location.href='/recommendations'">
+                View Recommendations
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="bottom-nav">
+    <a href="/dashboard">🏠<span>Home</span></a>
+    <a href="/facescan">📷<span>Scan</span></a>
+    <a href="/questionnaire">🧠<span>Quiz</span></a>
+    <a href="/reports">📊<span>Reports</span></a>
+    <a href="/recommendations">💡<span>Tips</span></a>
+    <a href="/profile">👤<span>Profile</span></a>
+</div>
+
+<script src="{{ url_for('static', filename='js/flowGuard.js') }}"></script>
+
+<script>
+    let username = localStorage.getItem("username") || "User";
+    let email = localStorage.getItem("email") || "";
+
+    function getInitials(name){
+        let words = name.trim().split(" ");
+        if(words.length >= 2){
+            return (words[0][0] + words[1][0]).toUpperCase();
+        }
+        return name.substring(0,2).toUpperCase();
+    }
+
+    document.getElementById("sidebarName").innerText = username;
+    document.getElementById("sidebarEmail").innerText = email;
+    document.getElementById("userInitials").innerText = getInitials(username);
+
+    let userId = localStorage.getItem("user_id");
+
+    if(!userId){
+        alert("Please login first.");
+        window.location.href = "/";
+    }
+
+    let latestReport = null;
+    let allReports = [];
+
+    fetch(`/api/get_reports/${userId}`)
+    .then(response => response.json())
+    .then(data => {
+
+        if(!data.success){
+            alert(data.error);
+            return;
+        }
+
+        let reports = data.reports;
+        allReports = reports;
+
+        document.getElementById("totalAssessments").innerText = reports.length;
+
+        if(reports.length === 0){
+            document.getElementById("emptyMessage").style.display = "block";
+            return;
+        }
+
+        document.getElementById("emptyMessage").style.display = "none";
+
+        let total = 0;
+
+        reports.forEach(r => {
+            total += Number(r.final_score || 0);
+        });
+
+        let average = Math.round(total / reports.length);
+
+        document.getElementById("averageScore").innerText = average;
+
+        latestReport = reports[0];
+
+        let cleanStatus = latestReport.stress_level
+            .replace("🟢","")
+            .replace("🟡","")
+            .replace("🔴","")
+            .trim();
+
+        document.getElementById("currentLevel").innerText = cleanStatus;
+        document.getElementById("latestStatus").innerText = latestReport.stress_level;
+
+        if(latestReport.stress_level.includes("Low")){
+            document.getElementById("statusMessage").innerText =
+                "Great! Your stress level is currently low.";
+            document.getElementById("stressProgress").style.width = "35%";
+        }
+        else if(latestReport.stress_level.includes("Medium")){
+            document.getElementById("statusMessage").innerText =
+                "Your stress level is moderate. Take short breaks and relax.";
+            document.getElementById("stressProgress").style.width = "65%";
+        }
+        else{
+            document.getElementById("statusMessage").innerText =
+                "High stress detected. Try breathing exercises and rest.";
+            document.getElementById("stressProgress").style.width = "95%";
+        }
+
+        let graph = document.getElementById("stressGraph");
+        graph.innerHTML = "";
+
+        let graphData = [...reports].reverse();
+
+        graphData.forEach(r => {
+            let score = Number(r.final_score || 0);
+            let barHeight = score * 12;
+
+            if(barHeight < 20){
+                barHeight = 20;
+            }
+
+            let bar = document.createElement("div");
+            bar.className = "bar";
+            bar.style.height = barHeight + "px";
+            bar.innerHTML = `<span>${score}</span>`;
+
+            graph.appendChild(bar);
+        });
+
+        let table = document.getElementById("reportTable");
+
+        reports.forEach(r => {
+            let row = table.insertRow();
+
+            row.innerHTML = `
+                <td>${r.created_at}</td>
+                <td>${r.emotion}</td>
+                <td>${r.heart_rate} bpm</td>
+                <td>${r.blink_rate} /min</td>
+                <td>${r.resp_rate} rpm</td>
+                <td>${r.blood_pressure}</td>
+                <td>${r.face_score}</td>
+                <td>${r.questionnaire_score}</td>
+                <td>${r.final_score}</td>
+                <td>${r.stress_level}</td>
+            `;
+        });
+
+    })
+    .catch(error => {
+        alert("Reports loading error: " + error);
+    });
+
+    function downloadStressReport(){
+
+        if(!latestReport){
+            alert("No report data available");
+            return;
+        }
+
+        let recommendation = "";
+
+        if(latestReport.stress_level.includes("Low")){
+            recommendation =
+            "Maintain your current healthy routine, continue regular monitoring, and follow good sleep and relaxation habits.";
+        }
+        else if(latestReport.stress_level.includes("Medium")){
+            recommendation =
+            "Take short breaks, practice deep breathing, manage your workload, and include light physical activity in your routine.";
+        }
+        else{
+            recommendation =
+            "High stress detected. Take proper rest, practice relaxation techniques, reduce workload if possible, and seek support if stress continues.";
+        }
+
+        let report = `
+SMART STRESS MONITORING SYSTEM
+STRESS ANALYSIS REPORT
+
+----------------------------------------
+USER DETAILS
+----------------------------------------
+User Name: ${username}
+Email: ${email}
+
+----------------------------------------
+ASSESSMENT DETAILS
+----------------------------------------
+Date: ${latestReport.created_at}
+Final Stress Score: ${latestReport.final_score}
+Stress Status: ${latestReport.stress_level}
+
+----------------------------------------
+FACE SCAN DETAILS
+----------------------------------------
+Detected Emotion: ${latestReport.emotion}
+Heart Rate: ${latestReport.heart_rate} bpm
+Respiratory Rate: ${latestReport.resp_rate} rpm
+Blink Rate: ${latestReport.blink_rate} /min
+Blood Pressure: ${latestReport.blood_pressure}
+
+----------------------------------------
+HYBRID ANALYSIS DETAILS
+----------------------------------------
+Face Score: ${latestReport.face_score}
+Questionnaire Score: ${latestReport.questionnaire_score}
+
+----------------------------------------
+RECOMMENDATION
+----------------------------------------
+${recommendation}
+
+----------------------------------------
+Generated by Smart Stress Monitoring System
+----------------------------------------
+        `;
+
+        let blob = new Blob([report], {type:"text/plain"});
+        let link = document.createElement("a");
+
+        link.href = URL.createObjectURL(blob);
+        link.download = "Stress_Report.txt";
+        link.click();
+    }
+</script>
+
+</body>
+</html>

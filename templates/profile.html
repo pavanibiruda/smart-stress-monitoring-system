@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+    <style>
+        .profile-page{
+            max-width:100%;
+            overflow-x:hidden;
+        }
+
+        .profile-card{
+            background:white;
+            padding:30px;
+            border-radius:22px;
+            margin-top:30px;
+            box-shadow:0 2px 10px rgba(0,0,0,0.05);
+            display:flex;
+            align-items:center;
+            gap:25px;
+            max-width:100%;
+            overflow:hidden;
+        }
+
+        .profile-details{
+            min-width:0;
+            flex:1;
+        }
+
+        .big-avatar{
+            width:95px;
+            height:95px;
+            min-width:95px;
+            border-radius:18px;
+            background:linear-gradient(135deg,#6a00ff,#00d9ff);
+            color:white;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:34px;
+            font-weight:bold;
+        }
+
+        .profile-card h2{
+            font-size:30px;
+            word-break:break-word;
+        }
+
+        .profile-card p{
+            color:#666;
+            margin-top:6px;
+            word-break:break-word;
+        }
+
+        .logout-btn{
+            margin-top:18px;
+            padding:14px 22px;
+            border:none;
+            border-radius:14px;
+            background:linear-gradient(90deg,#ff1744,#d50000);
+            color:white;
+            font-size:16px;
+            font-weight:bold;
+            cursor:pointer;
+            width:100%;
+            max-width:220px;
+        }
+
+        .edit-btn{
+    border:none;
+    background:white;
+    color:#5d36c7;
+    font-size:16px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.edit-btn:hover{
+    text-decoration:underline;
+}
+
+        .profile-stats{
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:20px;
+            margin-top:25px;
+        }
+
+        .stat-card{
+            background:white;
+            padding:28px;
+            border-radius:20px;
+            text-align:center;
+            box-shadow:0 2px 10px rgba(0,0,0,0.05);
+            max-width:100%;
+            overflow:hidden;
+        }
+
+        .stat-card h2,
+        .stat-card p{
+            word-break:break-word;
+        }
+
+        .info-box{
+            background:white;
+            padding:30px;
+            border-radius:22px;
+            margin-top:25px;
+            margin-bottom:120px;
+            box-shadow:0 2px 10px rgba(0,0,0,0.05);
+            max-width:100%;
+            overflow:hidden;
+        }
+
+        .info-header{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:12px;
+            margin-bottom:25px;
+        }
+
+        .info-grid{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:20px;
+        }
+
+        .info-item label{
+            display:block;
+            margin-bottom:8px;
+            color:#333;
+        }
+
+        .info-value{
+            background:#f5f7fb;
+            padding:16px;
+            border-radius:14px;
+            color:#333;
+            min-height:52px;
+            word-break:break-word;
+            overflow-wrap:anywhere;
+        }
+
+        .history-title{
+            margin-top:28px;
+        }
+
+        @media(max-width:768px){
+            .profile-card{
+                flex-direction:column;
+                text-align:center;
+                padding:24px;
+            }
+
+            .profile-card h2{
+                font-size:24px;
+            }
+
+            .logout-btn{
+                max-width:100%;
+            }
+
+            .profile-stats{
+                grid-template-columns:1fr;
+            }
+
+            .info-grid{
+                grid-template-columns:1fr;
+            }
+
+            .info-box{
+                padding:22px;
+            }
+
+            .info-header{
+                align-items:flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="dashboard-container">
+
+    <div class="sidebar">
+        <div>
+            <div class="logo">
+                <h2>Smart Stress</h2>
+                <p>Monitoring System</p>
+            </div>
+
+            <div class="menu">
+                <a href="/dashboard">🏠 Dashboard</a>
+                <a href="/facescan">📷 Face Scan</a>
+                <a href="/questionnaire">📋 Questionnaire</a>
+                <a href="/reports">📊 Reports</a>
+                <a href="/recommendations">💡 Recommendations</a>
+                <a href="/history">🕒 History</a>
+                <a href="/profile" class="active">👤 Profile</a>
+            </div>
+        </div>
+
+        <div class="bottom-profile">
+            <div class="profile">
+                <div class="circle" id="userInitials"></div>
+                <div>
+                    <h4 id="sidebarName">User</h4>
+                    <p id="sidebarEmail"></p>
+                </div>
+            </div>
+            <a class="signout" href="#" onclick="logoutUser(); return false;">↩ Logout</a>
+        </div>
+    </div>
+
+    <div class="main-content profile-page">
+
+        <div class="top-section">
+            <h1>👤 My Profile</h1>
+            <p>Your personal wellness account</p>
+        </div>
+
+        <div class="profile-card">
+            <div class="big-avatar" id="profileInitials">U</div>
+
+            <div class="profile-details">
+                <h2 id="profileName">Loading...</h2>
+                <p id="profileEmail">Loading...</p>
+                <p id="memberSince">Member since -</p>
+
+                <button class="logout-btn" onclick="logoutUser()">
+                    Logout
+                </button>
+            </div>
+        </div>
+
+        <h2 class="history-title">📊 Activity Summary</h2>
+
+        <div class="profile-stats">
+
+            <div class="stat-card">
+                <p>〽️</p>
+                <h2 id="totalSessions">0</h2>
+                <p>Total Sessions</p>
+            </div>
+
+            <div class="stat-card">
+                <p>📈</p>
+                <h2 id="avgStress">N/A</h2>
+                <p>Average Stress</p>
+            </div>
+
+            <div class="stat-card">
+                <p>📅</p>
+                <h2 id="daysActive">0</h2>
+                <p>Days Active</p>
+            </div>
+
+        </div>
+
+        <div class="info-box">
+
+            <div class="info-header">
+                <h2>Personal Information</h2>
+                <button class="edit-btn" onclick="editProfile()">Edit</button>
+            </div>
+
+            <div class="info-grid">
+
+                <div class="info-item">
+                    <label>User ID</label>
+                    <div class="info-value" id="userIdValue"></div>
+                </div>
+
+                <div class="info-item">
+                    <label>Full Name</label>
+                    <div class="info-value" id="fullName"></div>
+                </div>
+
+                <div class="info-item">
+                    <label>Email Address</label>
+                    <div class="info-value" id="emailAddress"></div>
+                </div>
+
+                <div class="info-item">
+                    <label>Occupation</label>
+                    <div class="info-value" id="occupationValue"></div>
+                </div>
+
+                <div class="info-item">
+                    <label>Account Created</label>
+                    <div class="info-value" id="createdAt"></div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="bottom-nav">
+    <a href="/dashboard">🏠<span>Home</span></a>
+    <a href="/facescan">📷<span>Scan</span></a>
+    <a href="/questionnaire">🧠<span>Quiz</span></a>
+    <a href="/reports">📊<span>Reports</span></a>
+    <a href="/recommendations">💡<span>Tips</span></a>
+    <a href="/profile">👤<span>Profile</span></a>
+</div>
+
+<script src="{{ url_for('static', filename='js/flowGuard.js') }}"></script>
+
+<script>
+    let userId = localStorage.getItem("user_id");
+
+    if(!userId){
+        alert("Please login first.");
+        window.location.href = "/";
+    }
+
+    function getInitials(name){
+        let words = name.trim().split(" ");
+
+        if(words.length >= 2){
+            return (words[0][0] + words[1][0]).toUpperCase();
+        }
+
+        return name.substring(0,2).toUpperCase();
+    }
+
+    function logoutUser(){
+
+        let confirmLogout = confirm("Are you sure you want to logout?");
+
+        if(confirmLogout){
+
+            localStorage.clear();
+
+            alert("Logged out successfully");
+
+            window.location.href = "/";
+        }
+    }
+
+    function loadProfile(){
+
+        fetch(`/api/get_profile/${userId}`)
+        .then(response => response.json())
+        .then(data => {
+
+            if(!data.success){
+                alert(data.error);
+                return;
+            }
+
+            let user = data.user;
+
+            let initials = getInitials(user.username);
+
+            localStorage.setItem("username", user.username);
+            localStorage.setItem("email", user.email);
+            localStorage.setItem("occupation",user.occupation);
+            localStorage.setItem("occupation", user.occupation);
+
+            document.getElementById("sidebarName").innerText = user.username;
+            document.getElementById("sidebarEmail").innerText = user.email;
+            document.getElementById("userInitials").innerText = initials;
+
+            document.getElementById("profileInitials").innerText = initials;
+            document.getElementById("profileName").innerText = user.username;
+            document.getElementById("profileEmail").innerText = user.email;
+            document.getElementById("memberSince").innerText = "Member since " + user.created_at;
+
+            document.getElementById("userIdValue").innerText = user.user_id;
+            document.getElementById("fullName").innerText = user.username;
+            document.getElementById("emailAddress").innerText = user.email;
+            document.getElementById("occupationValue").innerText = user.occupation;
+            document.getElementById("createdAt").innerText = user.created_at;
+
+        })
+        .catch(error => {
+            alert("Profile loading error: " + error);
+        });
+    }
+
+    function loadProfileStats(){
+
+        fetch(`/api/get_reports/${userId}`)
+        .then(response => response.json())
+        .then(data => {
+
+            if(!data.success){
+                return;
+            }
+
+            let reports = data.reports;
+
+            document.getElementById("totalSessions").innerText = reports.length;
+
+            if(reports.length === 0){
+                document.getElementById("avgStress").innerText = "N/A";
+                document.getElementById("daysActive").innerText = "0";
+                return;
+            }
+
+            let totalScore = 0;
+            let dates = [];
+
+            reports.forEach(item => {
+
+                totalScore += Number(item.final_score || 0);
+
+                let dateOnly = item.created_at.toString().split(" ")[0] + " " +
+                               item.created_at.toString().split(" ")[1] + " " +
+                               item.created_at.toString().split(" ")[2] + " " +
+                               item.created_at.toString().split(" ")[3];
+
+                if(!dates.includes(dateOnly)){
+                    dates.push(dateOnly);
+                }
+            });
+
+            let avg = Math.round(totalScore / reports.length);
+
+            document.getElementById("avgStress").innerText = avg;
+            document.getElementById("daysActive").innerText = dates.length;
+
+        })
+        .catch(error => {
+            console.log(error);
+        });
+    }
+
+    function editProfile(){
+
+    let currentName = document.getElementById("fullName").innerText;
+    let currentEmail = document.getElementById("emailAddress").innerText;
+
+    let newName = prompt("Enter new name", currentName);
+    if(newName === null || newName.trim() === "") return;
+
+    let newEmail = prompt("Enter new email", currentEmail);
+    if(newEmail === null || newEmail.trim() === "") return;
+
+    fetch(`/api/update_profile/${userId}`,{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+            username:newName.trim(),
+            email:newEmail.trim()
+        })
+    })
+    .then(res=>res.json())
+    .then(data=>{
+        if(data.success){
+            alert("Profile updated successfully");
+            localStorage.setItem("username", newName.trim());
+            localStorage.setItem("email", newEmail.trim());
+            loadProfile();
+        }
+        else{
+            alert(data.error);
+        }
+    });
+}
+
+    loadProfile();
+    loadProfileStats();
+</script>
+
+</body>
+</html>
