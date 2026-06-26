@@ -169,6 +169,8 @@ The Android application uses:
 - Buragani Navya
 - Challa Sreeya
 
+**Repository Maintainer:** Biruda Purnima Pavani Ganga
+
 ### 👨‍🏫 Guide
 - Dr. T. Chandrasekhar
 
