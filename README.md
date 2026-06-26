@@ -1,34 +1,43 @@
 # 🧠 Smart Stress Monitoring System
 
-> AI-powered Stress Detection using Facial Emotion Recognition, Vital Signs Estimation, and Questionnaire Analysis.
+> **AI-powered Stress Detection using Facial Emotion Recognition, Vital Signs Estimation, and Questionnaire Analysis for Mental Well-being.**
+
+![Project Poster](screenshots/project-poster.png)
 
 ![Python](https://img.shields.io/badge/Python-3.10-blue?logo=python)
 ![Flask](https://img.shields.io/badge/Flask-Web%20Framework-black?logo=flask)
 ![TensorFlow](https://img.shields.io/badge/TensorFlow-Deep%20Learning-orange?logo=tensorflow)
 ![OpenCV](https://img.shields.io/badge/OpenCV-Computer%20Vision-green?logo=opencv)
 ![MySQL](https://img.shields.io/badge/MySQL-Database-blue?logo=mysql)
+![License](https://img.shields.io/badge/Academic-Project-success)
 
 ---
 
-## 📌 Project Overview
+# 📖 Project Overview
 
-The Smart Stress Monitoring System is an AI-powered web application that predicts a user's stress level by combining facial emotion recognition, estimated vital signs, and questionnaire analysis.
+The **Smart Stress Monitoring System** is an AI-powered web application developed to monitor and predict stress levels by combining **facial emotion recognition**, **estimated vital signs**, and **questionnaire analysis**.
 
-The system captures facial expressions through a webcam, estimates physiological indicators such as heart rate, respiratory rate, blink rate, and blood pressure, combines them with questionnaire responses, and predicts whether the user's stress level is **Low**, **Moderate**, or **High**.
+The system captures facial expressions through a webcam, estimates physiological indicators such as **heart rate**, **blink rate**, **respiratory rate**, and **blood pressure**, combines these with questionnaire responses, and predicts the user's stress level as:
 
-The project was developed as part of our **AI & ML Internship Project (2026)**.
+- 🟢 Low Stress
+- 🟡 Moderate Stress
+- 🔴 High Stress
+
+Based on the prediction, the application provides personalized wellness recommendations to help improve mental well-being.
+
+This project was developed as part of the **AI & ML In-House Internship Project (2026)** at **Aditya University**.
 
 ---
 
 # ✨ Features
 
-- 🔐 User Registration & Login
+- 🔐 Secure User Registration & Login
 - 😀 Facial Emotion Recognition
 - ❤️ Vital Signs Estimation
-- 📝 Stress Questionnaire
-- 🧠 AI-based Stress Prediction
+- 📝 Dynamic Stress Questionnaire
+- 🧠 AI-Based Stress Prediction
 - 📊 Dashboard & Analytics
-- 📈 Stress Reports
+- 📈 Stress Reports & History
 - 💡 Personalized Wellness Recommendations
 - 👤 User Profile Management
 
@@ -50,25 +59,30 @@ The project was developed as part of our **AI & ML Internship Project (2026)**.
 
 ![Technologies](screenshots/technologies-used.png)
 
-### Frontend
-- HTML
-- CSS
+## Frontend
+
+- HTML5
+- CSS3
 - JavaScript
 
-### Backend
+## Backend
+
 - Python
 - Flask
 
-### AI / Machine Learning
+## AI / Machine Learning
+
 - TensorFlow
 - Keras
 - OpenCV
 - ResNet-50 CNN
 
-### Database
+## Database
+
 - MySQL
 
-### Mobile Version
+## Android Application
+
 - Firebase Authentication
 - TensorFlow Lite
 
@@ -76,37 +90,37 @@ The project was developed as part of our **AI & ML Internship Project (2026)**.
 
 # 📸 Application Screenshots
 
-## Login Page
+## 🔐 Login Page
 
 ![Login](screenshots/login-page.png)
 
 ---
 
-## Dashboard
+## 📊 Dashboard
 
 ![Dashboard](screenshots/dashboard.png)
 
 ---
 
-## Face Scan
+## 📷 Face Scan
 
 ![Face Scan](screenshots/face-scan.png)
 
 ---
 
-## Questionnaire
+## 📝 Questionnaire
 
 ![Questionnaire](screenshots/questionnaire.png)
 
 ---
 
-## Reports
+## 📈 Reports
 
 ![Reports](screenshots/reports.png)
 
 ---
 
-## Recommendations
+## 💡 Recommendations
 
 ![Recommendations](screenshots/recommendations.png)
 
@@ -114,12 +128,13 @@ The project was developed as part of our **AI & ML Internship Project (2026)**.
 
 # 📂 Project Structure
 
-```
+```text
 smart-stress-monitoring-system
 │
 ├── app.py
 ├── requirements.txt
 ├── smart_stress_database.sql
+├── convert_tflite.py
 │
 ├── static/
 ├── templates/
@@ -133,58 +148,97 @@ smart-stress-monitoring-system
 
 # 🤖 AI Models
 
-This repository uses the following trained models.
+The project was trained using the following deep learning model:
 
-- ResNet50 Emotion Recognition Model (.keras)
-- TensorFlow Lite Model (.tflite)
-- Quantized TensorFlow Lite Model (.tflite)
+### Main Model
 
-**Note:** The trained model files are not included in this repository due to GitHub's file size limitations.
+- **ResNet50 Emotion Recognition Model (.keras)**
+
+### Android Models
+
+- emotion_model.tflite
+- emotion_model_quant.tflite
+
+The TensorFlow Lite models were generated from the trained Keras model to support the Android application.
+
+> **Note:**  
+> Due to GitHub's file size limitations, the trained model files are not included in this repository.
 
 ---
 
-# 📱 Android Application
+# 📱 Android Companion Application
 
-In addition to the web application, an Android version of this project was also developed.
+In addition to the web application, an Android version of the project was also developed to improve accessibility and usability.
 
-The Android application uses:
+The Android application includes:
 
 - Firebase Authentication
-- TensorFlow Lite
+- TensorFlow Lite Emotion Recognition
 - Same AI prediction workflow as the web application
+
+This Android application was developed as an **additional implementation** and is not the primary internship deliverable.
 
 ---
 
 # 📄 Documentation
 
-- 📑 Project Report → `Reports/`
-- 🎤 Presentation → `PPT's/`
+📑 Project Report
+
+```
+Reports/
+```
+
+🎤 Project Presentation
+
+```
+PPT's/
+```
 
 ---
 
 # 👥 Team
 
-- Biruda Purnima Pavani Ganga
+- **Biruda Purnima Pavani Ganga**
 - Aatala Pavani
 - Buragani Navya
 - Challa Sreeya
 
-**Repository Maintainer:** Biruda Purnima Pavani Ganga
+**Repository Maintainer:**  
+**Biruda Purnima Pavani Ganga**
 
 ### 👨‍🏫 Guide
+
 - Dr. T. Chandrasekhar
 
 ### 👨‍🏫 Co-Guide
+
 - Mr. L. Dasaradha Ramayya
-
-# 🚀 Future Improvements
-
-- Cloud Deployment
-- Mobile App Release
-- Real-time Notifications
-- Doctor Consultation Module
-- Wearable Device Integration
 
 ---
 
-# ⭐ If you found this project useful, please consider giving it a Star.
+# 🚀 Future Improvements
+
+- ☁️ Cloud Deployment
+- 📱 Full Android Application Release
+- 🔔 Real-time Notifications
+- 🩺 Doctor Consultation Module
+- ⌚ Wearable Device Integration
+- 📊 Advanced AI Analytics
+
+---
+
+# ⭐ Support
+
+If you found this project useful, please consider giving it a ⭐ on GitHub.
+
+---
+
+## 📧 Contact
+
+**Biruda Purnima Pavani Ganga**
+
+AI & ML Undergraduate  
+Aditya University
+
+GitHub:
+https://github.com/pavanibiruda
