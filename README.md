@@ -57,34 +57,44 @@ This project was developed as part of the **AI & ML In-House Internship Project 
 
 # 🛠️ Technologies Used
 
-![Technologies](screenshots/technologies-used.png)
-
 ## Frontend
 
 - HTML5
 - CSS3
 - JavaScript
+- React.js
+- Bootstrap
 
 ## Backend
 
 - Python
 - Flask
 
+## Database
+
+- MySQL
+
 ## AI / Machine Learning
 
 - TensorFlow
 - Keras
 - OpenCV
-- ResNet-50 CNN
-
-## Database
-
-- MySQL
+- ResNet50 (CNN)
+- TensorFlow Lite (Android Deployment)
 
 ## Android Application
 
+- Android Studio
+- Java
+- XML
+- HTML, CSS & JavaScript (embedded in WebView)
+- WebView
 - Firebase Authentication
-- TensorFlow Lite
+- Google ML Kit Face Detection
+- TensorFlow Lite (Quantized Model)
+- Android SDK
+- PDF Document API
+- LocalStorage
 
 ---
 
@@ -148,51 +158,47 @@ smart-stress-monitoring-system
 
 # 🤖 AI Models
 
-The project was trained using the following deep learning model:
+The project uses a deep learning model for facial emotion recognition.
 
-### Main Model
+## Web Application
 
 - **ResNet50 Emotion Recognition Model (.keras)**
 
-### Android Models
+## Android Application
 
 - emotion_model.tflite
 - emotion_model_quant.tflite
 
-The TensorFlow Lite models were generated from the trained Keras model to support the Android application.
+The TensorFlow Lite models were generated from the trained ResNet50 Keras model for optimized on-device inference in the Android application.
 
 > **Note:**  
-> Due to GitHub's file size limitations, the trained model files are not included in this repository.
+> The trained model files are not included in this repository because they exceed GitHub's file size limitations.
 
 ---
 
 # 📱 Android Companion Application
 
-In addition to the web application, an Android version of the project was also developed to improve accessibility and usability.
+An Android version of the Smart Stress Monitoring System was also developed to provide mobile access to the application.
 
-The Android application includes:
+### Features
 
-- Firebase Authentication
-- TensorFlow Lite Emotion Recognition
-- Same AI prediction workflow as the web application
+- Secure user authentication using Firebase Authentication
+- Face detection using Google ML Kit
+- Emotion recognition using TensorFlow Lite (Quantized Model)
+- Questionnaire-based stress assessment
+- Stress reports and recommendations
+- Report generation using Android PDF Document API
+- Local data management using LocalStorage
+- WebView integration for web-based modules
 
-This Android application was developed as an **additional implementation** and is not the primary internship deliverable.
+The Android application serves as a mobile companion to the web application, offering the same AI-based stress assessment workflow with an optimized mobile user experience.
 
 ---
 
 # 📄 Documentation
 
-📑 Project Report
-
-```
-Reports/
-```
-
-🎤 Project Presentation
-
-```
-PPT's/
-```
+- 📑 **Project Report:** `Reports/Smart_Stress_Monitoring_System_Report.pdf`
+- 🎤 **Project Presentation:** `PPT's/Smart_Stress_Monitoring_System_Presentation.pptx`
 
 ---
 
@@ -233,12 +239,13 @@ If you found this project useful, please consider giving it a ⭐ on GitHub.
 
 ---
 
-## 📧 Contact
+# 📧 Contact
 
 **Biruda Purnima Pavani Ganga**
 
 AI & ML Undergraduate  
 Aditya University
 
-GitHub:
-https://github.com/pavanibiruda
+**GitHub:** https://github.com/pavanibiruda
+
+**Repository:** https://github.com/pavanibiruda/smart-stress-monitoring-system
