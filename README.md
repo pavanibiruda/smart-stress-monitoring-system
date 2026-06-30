@@ -205,7 +205,7 @@ The Android application serves as a mobile companion to the web application, off
 # 👥 Team
 
 - **Biruda Purnima Pavani Ganga**
-- Aatala Pavani
+- Aatla Pavani
 - Buragani Navya
 - Challa Sreeya
 
